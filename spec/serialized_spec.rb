@@ -62,8 +62,8 @@ describe JsonRecord::Serialized do
   
   it "should convert values to datetimes" do
     model = JsonRecord::Test::Model.new
-    model.viewed_at = "2010-01-25T12:00:15-6:00"
-    model.viewed_at.should == Time.parse("2010-01-25T12:00:15-6:00").utc
+    model.viewed_at = "2010-01-25T12:00:15-8:00"
+    model.viewed_at.should == Time.parse("2010-01-25T12:00:15-8:00").utc
   end
   
   it "should convert values to booleans" do
@@ -147,6 +147,18 @@ describe JsonRecord::Serialized do
     model.value.should == 0
   end
   
+  it "uses default values if degenerate JSON is set" do
+    model = JsonRecord::Test::Model.new(:json => '')
+    model.value.should == 0
+    model = JsonRecord::Test::Model.new(:json => '""')
+    model.value.should == 0
+    model = JsonRecord::Test::Model.new(:json => "''")
+    model.value.should == 0
+    model = JsonRecord::Test::Model.new(:json => nil)
+    model.value.should == 0
+  end
+  
+  
   it "should initialize json attributes with blank values" do
     json_attributes = JsonRecord::Test::Model.new.attributes
     json_attributes.delete('id').should == nil
@@ -188,7 +200,7 @@ describe JsonRecord::Serialized do
     model_2.map["val2"] = 2
     model_2.map.should == {"val2" => 2}
   end
-  
+    
   it "should allow mass assignment of json attributes" do
     model = JsonRecord::Test::Model.new(:name => "test name", :string_field => "test string_field", :price => "1")
     model.name.should == "test name"
