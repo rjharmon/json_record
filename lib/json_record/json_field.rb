@@ -35,6 +35,7 @@ module JsonRecord
       unless @record[@name].blank?
         json = @record[@name]
         json = Zlib::Inflate.inflate(json) if @compressed
+        json = "{}" if json == "''" || json == '""' 
         do_not_track_changes = Thread.current[:do_not_track_json_field_changes]
         Thread.current[:do_not_track_json_field_changes] = true
         begin
